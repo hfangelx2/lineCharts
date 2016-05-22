@@ -15,4 +15,24 @@
     self.yLine = nil;
     self.pointArray = nil;
 }
+
+- (NSMutableArray *)pointArray
+{
+    if (!_pointArray) {
+        _pointArray = [NSMutableArray array];
+    }
+    return _pointArray;
+}
+
+@end
+
+@implementation LineViewPointModel
+
+
+@end
+
+@implementation LineViewIndexModel
+
+
+
 @end

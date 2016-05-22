@@ -16,7 +16,6 @@
 		04310EDF1CED98E000A7070B /* LineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 04310EDE1CED98E000A7070B /* LineView.m */; };
 		04310EE21CED9ACB00A7070B /* UIView+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 04310EE11CED9ACB00A7070B /* UIView+Extension.m */; };
 		04310EE51CEDCC9D00A7070B /* LineViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 04310EE41CEDCC9D00A7070B /* LineViewModel.m */; };
-		04310EE81CEDCF5500A7070B /* LineViewPointModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 04310EE71CEDCF5500A7070B /* LineViewPointModel.m */; };
 		3D33930FB6C9B59873497BAE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 498E6C5CC6813F1B9A89E346 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -37,8 +36,6 @@
 		04310EE11CED9ACB00A7070B /* UIView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extension.m"; sourceTree = "<group>"; };
 		04310EE31CEDCC9D00A7070B /* LineViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineViewModel.h; sourceTree = "<group>"; };
 		04310EE41CEDCC9D00A7070B /* LineViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineViewModel.m; sourceTree = "<group>"; };
-		04310EE61CEDCF5500A7070B /* LineViewPointModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineViewPointModel.h; sourceTree = "<group>"; };
-		04310EE71CEDCF5500A7070B /* LineViewPointModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineViewPointModel.m; sourceTree = "<group>"; };
 		109D4BC434F8E1348B1FCF0A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		498E6C5CC6813F1B9A89E346 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1EC9537301FFCED9E9A8A4F /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -77,18 +74,16 @@
 		04310EC51CED984200A7070B /* lineAtScoreView */ = {
 			isa = PBXGroup;
 			children = (
-				04310EE01CED9ACB00A7070B /* UIView+Extension.h */,
-				04310EE11CED9ACB00A7070B /* UIView+Extension.m */,
 				04310EC91CED984200A7070B /* AppDelegate.h */,
 				04310ECA1CED984200A7070B /* AppDelegate.m */,
 				04310ECC1CED984200A7070B /* ViewController.h */,
 				04310ECD1CED984200A7070B /* ViewController.m */,
+				04310EE01CED9ACB00A7070B /* UIView+Extension.h */,
+				04310EE11CED9ACB00A7070B /* UIView+Extension.m */,
 				04310EDD1CED98E000A7070B /* LineView.h */,
 				04310EDE1CED98E000A7070B /* LineView.m */,
 				04310EE31CEDCC9D00A7070B /* LineViewModel.h */,
 				04310EE41CEDCC9D00A7070B /* LineViewModel.m */,
-				04310EE61CEDCF5500A7070B /* LineViewPointModel.h */,
-				04310EE71CEDCF5500A7070B /* LineViewPointModel.m */,
 				04310EC61CED984200A7070B /* Supporting Files */,
 			);
 			path = lineAtScoreView;
@@ -249,7 +244,6 @@
 				04310EDF1CED98E000A7070B /* LineView.m in Sources */,
 				04310ECE1CED984200A7070B /* ViewController.m in Sources */,
 				04310ECB1CED984200A7070B /* AppDelegate.m in Sources */,
-				04310EE81CEDCF5500A7070B /* LineViewPointModel.m in Sources */,
 				04310EC81CED984200A7070B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

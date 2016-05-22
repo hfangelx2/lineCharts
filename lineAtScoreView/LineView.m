@@ -9,7 +9,7 @@
 #import "LineView.h"
 #import "LineViewModel.h"
 #import "UIView+Extension.h"
-#import "LineViewPointModel.h"
+
 @interface LineView ()
 /**
  *  X轴 线
@@ -106,38 +106,39 @@ static float padding = 55;
     NSLog(@"%s", __func__);
     //画图 -> 最好的选择 AsyncDisplayKit
     
-    if (!self.berierPath.empty) {
-        [self.berierPath removeAllPoints];
-    }
-    
-    if (self.dataModel) {
+//    if (!self.berierPath.empty) {
+//        [self.berierPath removeAllPoints];
+//    }
+//    
+//    if (self.dataModel) {
+//
+//        //判断两个点的位数是否一致
+//        NSInteger count = self.dataModel.xLine.count == self.dataModel.yLine.count ? self.dataModel.xLine.count : (self.dataModel.xLine.count > self.dataModel.yLine.count ? self.dataModel.yLine.count : self.dataModel.xLine.count);
+//        //绘点
+//        /*
+//         1.这里的点是需要自己内部计算的,不是外面传进来的点
+//         2.根据使用者传进来不不同参数来进行计算点的坐标
+//         */
+//        for (int i = 0; i < count; i++) {
+//            CGFloat x = [self.dataModel.xLine[i] floatValue];
+//            CGFloat y = [self.dataModel.yLine[i] floatValue];
+//            if (i == 0) {
+//                [self.berierPath moveToPoint:CGPointMake(x, y)];
+//            }
+//            else {
+//                [self.berierPath addLineToPoint:CGPointMake(x, y)];
+//            }
+//            NSLog(@"%f --- %f" ,x ,y);
+//        }
+//        
+//    }
+//    [self.berierPath stroke];
 
-        //判断两个点的位数是否一致
-        NSInteger count = self.dataModel.xLine.count == self.dataModel.yLine.count ? self.dataModel.xLine.count : (self.dataModel.xLine.count > self.dataModel.yLine.count ? self.dataModel.yLine.count : self.dataModel.xLine.count);
-        //绘点
-        /*
-         1.这里的点是需要自己内部计算的,不是外面传进来的点
-         2.根据使用者传进来不不同参数来进行计算点的坐标
-         */
-        for (int i = 0; i < count; i++) {
-            CGFloat x = [self.dataModel.xLine[i] floatValue];
-            CGFloat y = [self.dataModel.yLine[i] floatValue];
-            if (i == 0) {
-                [self.berierPath moveToPoint:CGPointMake(x, y)];
-            }
-            else {
-                [self.berierPath addLineToPoint:CGPointMake(x, y)];
-            }
-            NSLog(@"%f --- %f" ,x ,y);
-        }
-        
-    }
-    [self.berierPath stroke];
 }
 
+/** 计算 (核心方法) */
 - (void)calculate
 {
-
     if (self.dataSource) {//如果内部有数据 先移除掉  重新计算点
         [self.dataSource clearProperty];
     }
@@ -157,13 +158,94 @@ static float padding = 55;
     {
         _paddingH = padding;
     }
-    //3.计算 实际每个点所对应的位置
-    
+    for (LineViewPointModel *pointModel in self.dataModel.pointArray) {
+        //3.计算 实际每个点所对应的位置
+        [self calculatePoint:pointModel block:^(LineViewPointModel *currentPoint) {
+            
+        }];
+        
+    }
     
     //4.然后画X    Y轴
     [self xLine];
     [self yLine];
     
+}
+
+/** 计算点在控件中的实际位置 */
+- (void)calculatePoint:(LineViewPointModel *)point block:(void(^)(LineViewPointModel *))block
+{
+    //1.计算该点 位于 X Y 轴的某一段区间内
+    LineViewIndexModel *indexModel = [self calculatePoint:point atXline:self.dataModel.xLine yLine:self.dataModel.yLine];
+    
+    
+    //2.计算出实际点的坐标
+    
+    LineViewPointModel *currentPoint = [[LineViewPointModel alloc] init];
+    block(currentPoint);
+}
+
+/** 计算该点在X轴 Y轴的某一段区间内 */
+- (LineViewIndexModel *)calculatePoint:(LineViewPointModel *)point atXline:(NSArray *)xLine yLine:(NSArray *)yLine
+{
+    LineViewIndexModel *indexModel = [[LineViewIndexModel alloc] init];
+    //计算区间
+    indexModel.xIndex = [self calculateValue:point.x at:xLine];
+    indexModel.yIndex = [self calculateValue:point.y at:yLine];
+    
+    NSLog(@"%ld  ===== %ld",indexModel.xIndex ,indexModel.yIndex);
+    return indexModel;
+}
+
+/** 返回区间 */
+- (NSInteger)calculateValue:(CGFloat)value at:(NSArray *)array
+{
+    
+    for (int i = 0 ; i < array.count; i++) {
+        if (i == array.count - 1) {//说明是最后一个
+            CGFloat value1 = [array[i] floatValue];
+            if (value > value1) {//如果大于最后一个点 说明在该点右侧
+                return i;
+                break;
+            }else{//否则在该点内
+                return i == 0 ? 0 : i - 1;
+            }
+        }else{//如果不是最后一个
+            CGFloat value1 = [array[i] floatValue];
+            CGFloat value2 = [array[i] floatValue];
+            if (value1 > value && value < value2)
+            {//如果满足 说明找到index
+                return i;
+                break;
+            }
+            else
+            {//如果不满足
+                 if(value < value1)//是否小于所取到的第一个数
+                 {
+                     //如果i = 0 说明点在第一个区间内 所以返回i
+                     //反之 返回i - 1的区间
+                     return i == 0 ? i : i - 1;
+                     
+                 }
+                 else if(value > value2)//判断是否大于取得的第二个数
+                 {
+                     if (i == array.count - 1)//如果是最后一个  返回i = array.count
+                     {
+                         return array.count;
+                         break;
+                     }
+                     continue;
+                 }
+                
+            }
+            
+        }
+        
+        
+        
+    }
+    
+    return 0;
 }
 
 #pragma mark - public
@@ -283,4 +365,5 @@ static float padding = 55;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
 @end

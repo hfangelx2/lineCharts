@@ -33,7 +33,16 @@
     LineViewModel *model = [[LineViewModel alloc] init];
     model.yLine = @[@10 ,@30 ,@20 ,@70 ,@30];
     model.xLine = @[@20 ,@40 ,@60 ,@80 ,@100];
-    model.pointArray = @[@12,@24,@36,@48,@60,@82,@93];
+//    model.pointArray = @[@12,@24,@36,@48,@60,@82,@93];
+    
+    for (int i = 0 ; i < model.yLine.count; i++) {
+        LineViewPointModel *point = [[LineViewPointModel alloc] init];
+        point.x = arc4random()%100;
+        point.y = arc4random()%70;
+        [model.pointArray addObject:point];
+        NSLog(@"%f ------- %f" ,point.x, point.y);
+    }
+    NSLog(@"--------------------------");
     return model;
 }
 
