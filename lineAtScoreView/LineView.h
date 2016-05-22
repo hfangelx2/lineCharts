@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 @class LineViewModel;
+
+/** 接受一个willRomote的通知 来控制页面旋转*/
+static NSString *willRomote = @"willRomote";
+
 @interface LineView : UIView
 
 /** 所有的点 */
@@ -15,6 +19,7 @@
 
 /** 图表的宽度 */
 @property (nonatomic, assign) CGFloat chartsWidth;
+
 /** 图表的高度 */
 @property (nonatomic, assign) CGFloat chartsHeight;
 
@@ -50,6 +55,12 @@
 
 /** 是否显示刻度的过渡的动画 deafult = YES */
 @property (nonatomic, assign) BOOL displayAnimation;
+
+/** X轴每个刻度的宽度 deafult = 平均分配 */
+@property (nonatomic, assign) CGFloat xDials;
+
+/** Y轴每个刻度的高度 deafult = 平均分配 */
+@property (nonatomic, assign) CGFloat yDials;
 
 #pragma mark - method
 

@@ -9,5 +9,10 @@
 #import "LineViewModel.h"
 
 @implementation LineViewModel
-
+- (void)clearProperty
+{
+    self.xLine = nil;
+    self.yLine = nil;
+    self.pointArray = nil;
+}
 @end

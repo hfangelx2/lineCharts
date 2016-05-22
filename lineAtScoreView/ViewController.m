@@ -26,12 +26,12 @@
 }
 
 /**
- *  创建模拟数据模型
+ *  模拟创建模拟数据模型
  */
 - (LineViewModel *)creatData
 {
     LineViewModel *model = [[LineViewModel alloc] init];
-    model.yLine = @[@10 ,@30 ,@50 ,@70 ,@90];
+    model.yLine = @[@10 ,@30 ,@20 ,@70 ,@30];
     model.xLine = @[@20 ,@40 ,@60 ,@80 ,@100];
     model.pointArray = @[@12,@24,@36,@48,@60,@82,@93];
     return model;
@@ -92,6 +92,12 @@
     }
     
     NSLog(@"%@", line);
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    NSLog(@"%@=====%@",NSStringFromCGSize(size),coordinator);
+    [[NSNotificationCenter defaultCenter] postNotificationName:willRomote object:nil];
 }
 
 @end

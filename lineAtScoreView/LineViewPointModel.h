@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <UIKit/UIKit.h>
 @interface LineViewPointModel : NSObject
-
+@property (nonatomic, assign) CGFloat x;
+@property (nonatomic, assign) CGFloat y;
 @end

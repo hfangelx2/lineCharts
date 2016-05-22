@@ -9,17 +9,19 @@
 #import <Foundation/Foundation.h>
 
 @interface LineViewModel : NSObject
-/*
+/**
  *  Y轴显示的值
  */
 @property (nonatomic, strong) NSArray *yLine;
-/*
+/**
  *  X轴显示的值
  */
 @property (nonatomic, strong) NSArray *xLine;
-/*
+/**
  *  每个点
  */
 @property (nonatomic, strong) NSArray *pointArray;
 
+/** 清空内部数据 */
+- (void)clearProperty;
 @end
