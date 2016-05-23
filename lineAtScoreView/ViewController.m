@@ -31,14 +31,15 @@
 - (LineViewModel *)creatData
 {
     LineViewModel *model = [[LineViewModel alloc] init];
-    model.yLine = @[@10 ,@30 ,@20 ,@70 ,@30];
-    model.xLine = @[@20 ,@40 ,@60 ,@80 ,@100];
-//    model.pointArray = @[@12,@24,@36,@48,@60,@82,@93];
+    model.yLine = @[@0 ,@30 ,@60 ,@90 ,@120, @160];
+    model.xLine = @[@0 ,@20 ,@40 ,@60 ,@80 ,@100];
     
     for (int i = 0 ; i < model.yLine.count; i++) {
         LineViewPointModel *point = [[LineViewPointModel alloc] init];
-        point.x = arc4random()%100;
-        point.y = arc4random()%70;
+//        point.x = arc4random()%100;
+//        point.y = arc4random()%70;
+        point.x = i * 30;
+        point.y = i * 35;
         [model.pointArray addObject:point];
         NSLog(@"%f ------- %f" ,point.x, point.y);
     }
@@ -51,16 +52,20 @@
     if (!_line) {
         LineView* line = [LineView lineView];
         
-        UIPinchGestureRecognizer *pin = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scaleView:)];
-        [line addGestureRecognizer:pin];
+//        UIPinchGestureRecognizer *pin = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(scaleView:)];
+//        [line addGestureRecognizer:pin];
         
         __weak typeof(self)weaSelf = self;
+        
+        line.chartsWidth = 500.0f;
+        
+        line.chartsHeight = 300.f;
         
         line.getChartsWidth = ^(CGFloat chartsWidth){
             weaSelf.sc.contentSize = CGSizeMake(chartsWidth, 0);
         };
         
-        self.sc.contentSize = CGSizeMake(line.width, 0);
+        self.sc.contentSize = CGSizeMake(line.chartsWidth, 0);
         
         [self.sc addSubview:_line = line];
     }
@@ -71,7 +76,8 @@
 {
     if (!_sc) {
 
-        UIScrollView* sc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 200, self.view.frame.size.width, 200)];
+        UIScrollView* sc = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 200, self.view.frame.size.width, 400)];
+        sc.backgroundColor = [UIColor yellowColor];
 
         sc.delegate = self;
 

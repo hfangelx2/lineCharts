@@ -42,6 +42,7 @@ static float padding = 55;
 + (instancetype)lineView
 {
     LineView *lineView = [[LineView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    lineView.y = 50;
     [lineView deafult];
     return lineView;
 }
@@ -86,6 +87,7 @@ static float padding = 55;
 {
     [super layoutSubviews];
     NSLog(@"%s",__func__);
+    /* -------- 回传宽度 --------- */
     if (!self.chartsWidth) {
         if (self.getChartsWidth) {
             self.getChartsWidth(self.width);
@@ -96,6 +98,9 @@ static float padding = 55;
             self.getChartsHeight(self.height);
         }
     }
+    
+   
+    
 }
 
 #pragma mark - 绘图
@@ -106,34 +111,36 @@ static float padding = 55;
     NSLog(@"%s", __func__);
     //画图 -> 最好的选择 AsyncDisplayKit
     
-//    if (!self.berierPath.empty) {
-//        [self.berierPath removeAllPoints];
-//    }
-//    
-//    if (self.dataModel) {
-//
-//        //判断两个点的位数是否一致
-//        NSInteger count = self.dataModel.xLine.count == self.dataModel.yLine.count ? self.dataModel.xLine.count : (self.dataModel.xLine.count > self.dataModel.yLine.count ? self.dataModel.yLine.count : self.dataModel.xLine.count);
-//        //绘点
-//        /*
-//         1.这里的点是需要自己内部计算的,不是外面传进来的点
-//         2.根据使用者传进来不不同参数来进行计算点的坐标
-//         */
-//        for (int i = 0; i < count; i++) {
+    if (!self.berierPath.empty) {
+        [self.berierPath removeAllPoints];
+    }
+    
+    if (self.dataModel) {
+
+        //判断两个点的位数是否一致
+        NSInteger count = self.dataModel.xLine.count == self.dataModel.yLine.count ? self.dataModel.xLine.count : (self.dataModel.xLine.count > self.dataModel.yLine.count ? self.dataModel.yLine.count : self.dataModel.xLine.count);
+        //绘点
+        /*
+         1.这里的点是需要自己内部计算的,不是外面传进来的点
+         2.根据使用者传进来不不同参数来进行计算点的坐标
+         */
+        for (int i = 0; i < count; i++) {
+            LineViewPointModel *point = self.dataSource.pointArray[i];
 //            CGFloat x = [self.dataModel.xLine[i] floatValue];
 //            CGFloat y = [self.dataModel.yLine[i] floatValue];
-//            if (i == 0) {
-//                [self.berierPath moveToPoint:CGPointMake(x, y)];
-//            }
-//            else {
-//                [self.berierPath addLineToPoint:CGPointMake(x, y)];
-//            }
-//            NSLog(@"%f --- %f" ,x ,y);
-//        }
-//        
-//    }
-//    [self.berierPath stroke];
-
+            if (i == 0) {
+                [self.berierPath moveToPoint:CGPointMake(point.x, point.y)];
+            }
+            else {
+                [self.berierPath addLineToPoint:CGPointMake(point.x, point.y)];
+            }
+            NSLog(@"%f --- %f" ,point.x ,point.y);
+        }
+        
+    }
+    [self.berierPath stroke];
+    
+    
 }
 
 /** 计算 (核心方法) */
@@ -145,7 +152,7 @@ static float padding = 55;
 
     //1.计算在当前视图的宽度下, 每段是多少间距
     if (self.chartsWidth) {//如果已传入宽度
-       _paddingW = self.chartsWidth / self.dataSource.xLine.count;
+       _paddingW = self.chartsWidth / self.dataModel.xLine.count;
     }else//如果未传入宽度,默认使用padding来设置间距
     {
         _paddingW = padding;
@@ -153,7 +160,7 @@ static float padding = 55;
     
     //2.计算在当前视图的高度下, 每段是多少间距
     if (self.chartsHeight) {//如果已传入高度
-        _paddingH = self.chartsHeight / self.dataSource.yLine.count;
+        _paddingH = self.chartsHeight / self.dataModel.yLine.count;
     }else//如果未传入宽度,默认使用padding来设置间距
     {
         _paddingH = padding;
@@ -161,12 +168,14 @@ static float padding = 55;
     for (LineViewPointModel *pointModel in self.dataModel.pointArray) {
         //3.计算 实际每个点所对应的位置
         [self calculatePoint:pointModel block:^(LineViewPointModel *currentPoint) {
-            
+//            NSLog(@"%f---------%f",currentPoint.x,currentPoint.y);
+            [self.dataSource.pointArray addObject:currentPoint];
         }];
         
     }
     
     //4.然后画X    Y轴
+    [self confirmWidthAndHeight];
     [self xLine];
     [self yLine];
     
@@ -178,10 +187,9 @@ static float padding = 55;
     //1.计算该点 位于 X Y 轴的某一段区间内
     LineViewIndexModel *indexModel = [self calculatePoint:point atXline:self.dataModel.xLine yLine:self.dataModel.yLine];
     
-    
     //2.计算出实际点的坐标
+    LineViewPointModel *currentPoint = [self calculatePointPosition:indexModel point:point];
     
-    LineViewPointModel *currentPoint = [[LineViewPointModel alloc] init];
     block(currentPoint);
 }
 
@@ -193,7 +201,7 @@ static float padding = 55;
     indexModel.xIndex = [self calculateValue:point.x at:xLine];
     indexModel.yIndex = [self calculateValue:point.y at:yLine];
     
-    NSLog(@"%ld  ===== %ld",indexModel.xIndex ,indexModel.yIndex);
+//    NSLog(@"%ld  ===== %ld",indexModel.xIndex ,indexModel.yIndex);
     return indexModel;
 }
 
@@ -235,6 +243,9 @@ static float padding = 55;
                          break;
                      }
                      continue;
+                 }else
+                 {
+                     return i;
                  }
                 
             }
@@ -246,6 +257,37 @@ static float padding = 55;
     }
     
     return 0;
+}
+
+/** 计算每个点的位置 */
+- (LineViewPointModel *)calculatePointPosition:(LineViewIndexModel *)indexModel point:(LineViewPointModel *)point
+{
+    LineViewPointModel *currentPoint = [[LineViewPointModel alloc] init];
+    
+    if (self.dataModel.xLine.count <= indexModel.xIndex + 1) {//是否为X轴最后一个点
+        //最后一个点 需要计算位置
+    }
+    else{
+        CGFloat xMin = [self.dataModel.xLine[indexModel.xIndex] floatValue];
+        CGFloat xMax = [self.dataModel.xLine[indexModel.xIndex + 1] floatValue];
+        CGFloat scale = (xMax - xMin) / _paddingW;
+        currentPoint.x = ((point.x - xMin) * scale) + _paddingW * indexModel.xIndex;
+        NSLog(@"xMin=%f xMax=%f scale=%f currentPoint.x=%f index = %ld",xMin,xMax,scale,currentPoint.x,indexModel.xIndex);
+    }
+    
+    if (self.dataModel.yLine.count <= indexModel.yIndex + 1) {//是否为Y轴最后一个点
+        //最后一个点 需要计算位置
+    }
+    else
+    {
+        CGFloat yMin = [self.dataModel.yLine[indexModel.yIndex] floatValue];
+        CGFloat yMax = [self.dataModel.yLine[indexModel.yIndex + 1] floatValue];
+        CGFloat scale = (yMax - yMin) / _paddingH;
+        currentPoint.y = (point.y - yMin) * scale + _paddingH * indexModel.yIndex;
+         NSLog(@" ---------------------- yMin=%f yMax=%f scale=%f currentPoint.y=%f index = %ld",yMin,yMax,scale,currentPoint.y,indexModel.yIndex);
+    }
+    
+    return currentPoint;
 }
 
 #pragma mark - public
@@ -263,6 +305,18 @@ static float padding = 55;
 }
 
 #pragma mark - UI
+/** 计算X轴 Y轴 */
+- (void)confirmWidthAndHeight
+{
+    self.xlineView.width = (self.dataModel.xLine.count + 1) * _paddingW;//X轴总宽度
+    NSLog(@"%f",self.xlineView.width);
+    self.width = self.chartsWidth ? self.chartsWidth : self.xlineView.width;
+    
+    self.yLineView.height = (self.dataModel.yLine.count + 1) * _paddingH;
+    
+    self.height = self.chartsHeight ? self.chartsHeight : self.yLineView.height;
+}
+
 //X轴
 - (void)xLine
 {
@@ -271,10 +325,9 @@ static float padding = 55;
      2.确认取点的范围 -> 确认X轴的每一个刻度宽度
      3.
      */
-    
-    self.xlineView.width = self.dataModel.xLine.count * _paddingW;//X轴总宽度
-    
-    self.width = self.xlineView.width;
+
+    self.xlineView.x = 0;
+    self.xlineView.y = self.height;
     
 }
 
@@ -286,6 +339,11 @@ static float padding = 55;
      2.确认取点的范围 -> 确认Y轴的每一个刻度高度
      3.
      */
+    
+    self.yLineView.x = self.xlineView.x;
+    //y的最大值应该等于x轴的起点
+    self.yLineView.y = self.height - (self.height - self.xlineView.y) - self.yLineView.height;
+    
 }
 
 #pragma mark - lazy
@@ -293,7 +351,9 @@ static float padding = 55;
 - (UIView*)xlineView
 {
     if (!_xlineView) {
-        UIView* view = [[UIView alloc] init];
+        UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+        view.backgroundColor = [UIColor greenColor];
+        view.height = 0.5f;
         [self addSubview:_xlineView = view];
     }
     return _xlineView;
@@ -303,6 +363,8 @@ static float padding = 55;
 {
     if (!_yLineView) {
         UIView *yLine = [[UIView alloc] init];
+        yLine.backgroundColor = [UIColor blueColor];
+        yLine.width = 0.5f;
         [self addSubview:_yLineView = yLine];
     }
     return _yLineView;
